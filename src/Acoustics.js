@@ -1,8 +1,38 @@
 import _ from 'lodash'
+import Interp from './Interp'
 
 const format = (num) => Math.round(num)
 
 const K_FACTOR = 0.161
+
+// Target RT60 values recommended by DIN18041 standard for depending on room usage
+// A1 - Music
+// A2 - Speech / Presentation
+// A3 - Education / Communication
+// A4 - Education / Communication Inclusive
+// A5 - Sport
+const OPTIMAL_RT60 = {
+  A1: {
+    start: new Interp.Point(30, .73),
+    end: new Interp.Point(30000, 2.1),
+  },
+  A2: {
+    start: new Interp.Point(30, .42),
+    end: new Interp.Point(30000, 1.52),
+  },
+  A3: {
+    start: new Interp.Point(30, .3),
+    end: new Interp.Point(30000, 1.27),
+  },
+  A4: {
+    start: new Interp.Point(30, .25),
+    end: new Interp.Point(30000, 1.05),
+  },
+  A5: {
+    start: new Interp.Point(100, .5),
+    end: new Interp.Point(10000, 2),
+  },
+}
 
 class Acoustics {
   static RT60 = (V, A) => K_FACTOR * V / A
@@ -12,6 +42,18 @@ class Acoustics {
   static A_eq = (alpha, S) => alpha * S
 
   static alpha = (A_eq, S) => A_eq / S
+
+  static getTargetRT60 = (type, V) => {
+    if (!type || !OPTIMAL_RT60[type]) return null
+    const { start, end } = OPTIMAL_RT60[type]
+    try {
+      const log = new Interp.Log(start, end)
+      return _.round(log.interp(Number(V)), 2)
+    } catch (e) {
+      console.log(e)
+      return null
+    }
+  }
 
   static surfaceAreas = (dimensions) => {
     const width = dimensions.width / 100

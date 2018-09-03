@@ -31,12 +31,16 @@ class App extends Component {
     this.setState({ [e.target.name]: e.target.value })
   }
 
+  handleRoomType = (e) => {
+    this.setState({ [e.target.name]: e.target.value, customRT60Target: false })
+  }
+
   handleMeasuredRT60Input = (e) => {
     this.setState({ measuredRT60: { ...this.state.measuredRT60, [e.target.name]: e.target.value } })
   }
 
   render() {
-    const { width, length, height } = this.state
+    const { width, length, height, customRT60Target } = this.state
     const dimensions = { width, length, height }
 
     const surfaceAreas = Acoustics.surfaceAreas(dimensions)
@@ -44,7 +48,9 @@ class App extends Component {
     const measuredRT60Data = FrequencyDomain.map(hz => ({ frequency: hz, RT60: Number(this.state.measuredRT60[hz]) }))
     const A_eqs = Acoustics.A_eqs(measuredRT60Data, volume)
     const alphas = Acoustics.alphas(A_eqs, surfaceAreas.total)
-    const A_adds = Acoustics.A_adds(A_eqs, measuredRT60Data, alphas, this.state['RT60Target'], volume)
+    const DIN_RT60 = Acoustics.getTargetRT60(this.state.roomType || 'A1', volume)
+    const TargetRT60 = customRT60Target ? this.state.RT60Target : DIN_RT60
+    const A_adds = Acoustics.A_adds(A_eqs, measuredRT60Data, alphas, TargetRT60, volume)
 
     return (
       <div className="App">
@@ -85,10 +91,19 @@ class App extends Component {
           </Col>
         </Row>
 
+        <Row type="flex" gutter={16} style={{ padding: '32px' }}>
+          <Col span={6}>
+            Total Surface Area: {surfaceAreas ? surfaceAreas.total : 0} m<sup>2</sup>
+          </Col>
+          <Col span={6}>
+            Volume: {volume || 0} m<sup>3</sup>
+          </Col>
+        </Row>
+
         <div className="divider" />
 
         <Row type="flex" gutter={16} style={{ padding: '32px 32px 0 32px' }}>
-          <span>Measured Reverberation Times - RT60 (s)</span>
+          <span>Acoustic Properties</span>
         </Row>
 
         <Row type="flex" gutter={16} style={{ padding: '32px 32px 0 32px' }}>
@@ -120,7 +135,7 @@ class App extends Component {
           ))}
         </Row>
 
-        <Row type="flex" gutter={16} style={{ paddingTop: '32px' }}>
+        <Row type="flex" gutter={16} style={{ paddingTop: '32px' }} className="grid">
           <Col span={8} style={{ paddingTop: '8px' }}>
             <strong>Measured Reverberation Times</strong> (RT60 / s)
           </Col>
@@ -138,7 +153,7 @@ class App extends Component {
           ))}
         </Row>
 
-        <Row type="flex" gutter={16}>
+        <Row type="flex" gutter={16} className="grid">
           <Col span={8} className="grid-first-col">
             <strong>Equivalent Absorption Areas</strong> &nbsp; (Aeq / m<sup>2</sup>)
           </Col>
@@ -149,7 +164,7 @@ class App extends Component {
           ))}
         </Row>
 
-        <Row type="flex" gutter={16}>
+        <Row type="flex" gutter={16} className="grid">
           <Col span={8} className="grid-first-col">
             <strong>Additional Absorption Areas</strong> &nbsp; (Aeq / m<sup>2</sup>)
           </Col>
@@ -160,33 +175,30 @@ class App extends Component {
           ))}
         </Row>
 
-        <div className="divider" />
+        <div className="divider m20" />
 
-        <Row type="flex" gutter={16} style={{ padding: '32px' }}>
-          <Col span={6}>
-            Total Surface Area: {surfaceAreas ? surfaceAreas.total : 0} m<sup>2</sup>
-          </Col>
-          <Col span={6}>
-            Volume: {volume || 0} m<sup>3</sup>
-          </Col>
-        </Row>
-
-        <div className="divider" />
-
-        <Row type="flex" gutter={16}>
+        <Row type="flex" gutter={16} className="grid">
           <Col span={8} className="grid-first-col">
             <strong>Room Usage</strong>&nbsp;(DIN 18041)
           </Col>
           <Col span={16}>
-            <Radio.Group size="large" defaultValue="a" buttonStyle="solid">
+            <Radio.Group
+              name="roomType"
+              size="large"
+              buttonStyle="solid"
+              onChange={this.handleRoomType}
+              value={customRT60Target ? null : this.state.roomType}
+            >
               <Radio.Button value="A1">Music</Radio.Button>
-              <Radio.Button value="A2">Speech / Presentation</Radio.Button>
-              <Radio.Button value="A3">Education / Communication</Radio.Button>
+              <Radio.Button value="A2">Speech/Presentation</Radio.Button>
+              <Radio.Button value="A3">Education/Communication</Radio.Button>
+              <Radio.Button value="A4">Education/Communication Inclusive</Radio.Button>
+              <Radio.Button value="A5">Sport</Radio.Button>
             </Radio.Group>
           </Col>
         </Row>
 
-        <Row type="flex" gutter={16}>
+        <Row type="flex" gutter={16} className="grid">
           <Col span={8} className="grid-first-col">
             <strong>Target Reverberation Time</strong>
             &nbsp;
@@ -200,38 +212,21 @@ class App extends Component {
             />
           </Col>
           <Col span={16}>
-            <InputNumber
-              name="RT60Target"
-              size="large"
-              step={.05}
-              onChange={this.handleCustomRT60TargetInput}
-              value={this.state['RT60Target']}
-              disabled={!this.state.customRT60Target}
-            />
+            {customRT60Target ? (
+              <InputNumber
+                name="RT60Target"
+                size="large"
+                step={.05}
+                onChange={this.handleCustomRT60TargetInput}
+                value={this.state['RT60Target']}
+              />
+            ) : (
+              DIN_RT60 + 's'
+            )}
           </Col>
         </Row>
 
-        <div className="divider" />
-
-        <Row type="flex" gutter={16} style={{ padding: '32px 32px 0 32px' }}>
-          <span>Measured Reverberation Times - RT60 (s)</span>
-        </Row>
-
-        <Row type="flex" gutter={16} style={{ padding: '32px' }}>
-          {FrequencyDomain.map(hz => (
-            <Col span={3} key={hz}>
-              {this.state[hz+'-A-eq']}
-            </Col>
-          ))}
-        </Row>
-
-        <Row type="flex" gutter={16} style={{ padding: '32px' }}>
-          <Col span={6}>
-            Average
-          </Col>
-          <Col span={6}>
-          </Col>
-        </Row>
+        <div className="divider m20" />
       </div>
     )
   }
