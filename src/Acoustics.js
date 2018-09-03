@@ -1,6 +1,8 @@
 import _ from 'lodash'
 import Interp from './Interp'
 
+const { Point, Log } = Interp
+
 const format = (num) => Math.round(num)
 
 const K_FACTOR = 0.161
@@ -13,24 +15,24 @@ const K_FACTOR = 0.161
 // A5 - Sport
 const OPTIMAL_RT60 = {
   A1: {
-    start: new Interp.Point(30, .73),
-    end: new Interp.Point(30000, 2.1),
+    start: new Point(30, .73),
+    end: new Point(30000, 2.1),
   },
   A2: {
-    start: new Interp.Point(30, .42),
-    end: new Interp.Point(30000, 1.52),
+    start: new Point(30, .42),
+    end: new Point(30000, 1.52),
   },
   A3: {
-    start: new Interp.Point(30, .3),
-    end: new Interp.Point(30000, 1.27),
+    start: new Point(30, .3),
+    end: new Point(30000, 1.27),
   },
   A4: {
-    start: new Interp.Point(30, .25),
-    end: new Interp.Point(30000, 1.05),
+    start: new Point(30, .25),
+    end: new Point(30000, 1.05),
   },
   A5: {
-    start: new Interp.Point(100, .5),
-    end: new Interp.Point(10000, 2),
+    start: new Point(100, .5),
+    end: new Point(10000, 2),
   },
 }
 
@@ -47,7 +49,7 @@ class Acoustics {
     if (!type || !OPTIMAL_RT60[type]) return null
     const { start, end } = OPTIMAL_RT60[type]
     try {
-      const log = new Interp.Log(start, end)
+      const log = new Log(start, end)
       return _.round(log.interp(Number(V)), 2)
     } catch (e) {
       console.log(e)
