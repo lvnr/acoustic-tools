@@ -1,22 +1,65 @@
 import React, { Component } from 'react'
-import { Layout, Row, Col, Input, InputNumber, Radio, Switch, Icon } from 'antd'
+import { Layout, Row, Col, Input, InputNumber, Radio, Switch, Icon, Button, Select, Divider, Card } from 'antd'
 import { Persist } from 'react-persist'
 import { VictoryArea, VictoryChart, VictoryAxis } from 'victory'
 import Acoustics from './Acoustics'
 import './App.css'
+import db from './db'
 
 const { Content } = Layout
+const { Option } = Select
 
 const FrequencyDomain = [63, 125, 250, 500, 1000, 2000, 4000, 8000]
 
 class App extends Component {
   state = {
+    project: undefined,
+    room: undefined,
+    newProject: '',
+    newRoom: '',
     length: 600,
     width: 400,
     height: 310,
     RT60Target: null,
     customRT60Target: true,
     measuredRT60: { 63: null, 125: null, 250: null, 500: null, 1000: null, 2000: null, 4000: null, 8000: null },
+  }
+
+  kebab = (string) => {
+    return string
+      .replace(/([a-z])([A-Z])/g, '$1-$2')    // get all lowercase letters that are near to uppercase ones
+      .replace(/[\s_]+/g, '-')                // replace all spaces and low dash
+      .toLowerCase()                          // convert to lower case
+  }
+
+  handleAddRoom = (room) => {
+    const rooms = db
+      .get('rooms')
+      .push({
+        name: room,
+        id: this.kebab(room)
+      })
+      .write()
+    this.setState({ newRoom: null })
+  }
+
+  handleAddProject = (project) => {
+    const projects = db
+      .get('projects')
+      .push({
+        name: project,
+        id: this.kebab(project)
+      })
+      .write()
+    this.setState({ newProject: null })
+  }
+
+  handleRoomChange = (room) => {
+    this.setState({ room })
+  }
+
+  handleProjectChange = (project) => {
+    this.setState({ project })
   }
 
   handleCustomRT60Target = (checked) => {
@@ -40,7 +83,7 @@ class App extends Component {
   }
 
   render() {
-    const { width, length, height, customRT60Target } = this.state
+    const { project, room, width, length, height, customRT60Target } = this.state
     const dimensions = { width, length, height }
 
     const surfaceAreas = Acoustics.surfaceAreas(dimensions)
@@ -52,18 +95,77 @@ class App extends Component {
     const TargetRT60 = customRT60Target ? this.state.RT60Target : DIN_RT60
     const A_adds = Acoustics.A_adds(A_eqs, measuredRT60Data, alphas, TargetRT60, volume)
 
+    const projects = db.get('projects').value()
+    const rooms = db.get('rooms').value()
+
+    let persistenceKey = 'room-data'
+    if (project && room) persistenceKey = project + '__' + room
+
     return (
       <div className="App">
         <Persist
-          name="room-data"
+          name={persistenceKey}
           data={this.state}
           debounce={500}
           onMount={data => this.setState(data)}
         />
 
-        <Row type="flex" gutter={16} style={{ padding: '32px 32px 0 32px' }}>
-          <span>Room Dimensions</span>
+        <Divider orientation="left">Project & Room</Divider>
+
+        <Row type="flex" gutter={16} style={{ padding: '32px' }}>
+          <Card style={{ width: '100%', marginBottom: 20 }}>
+            <span>PROJECT</span>
+            <Divider type="vertical" />
+            <Select
+              showSearch
+              style={{ width: 250 }}
+              size="large"
+              placeholder="Select a project"
+              optionFilterProp="children"
+              onChange={this.handleProjectChange}
+              filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+              value={this.state.project}
+            >
+              {projects.map((project, i) => <Option key={i} value={project.id}>{project.name}</Option>)}
+            </Select>
+            <Divider type="vertical" />
+            <Input.Search
+              name="newProject"
+              style={{ width: 250 }}
+              enterButton={<Button type="primary" icon="plus" />}
+              onSearch={this.handleAddProject}
+              onChange={this.handleInput}
+              value={this.state.newProject}
+            />
+          </Card>
+          <Card style={{ width: '100%' }}>
+            <span>ROOM</span>
+            <Divider type="vertical" />
+            <Select
+              showSearch
+              style={{ width: 250 }}
+              size="large"
+              placeholder="Select a room"
+              optionFilterProp="children"
+              onChange={this.handleRoomChange}
+              filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+              value={this.state.room}
+            >
+              {rooms.map((room, i) => <Option key={i} value={room.id}>{room.name}</Option>)}
+            </Select>
+            <Divider type="vertical" />
+            <Input.Search
+              name="newRoom"
+              style={{ width: 250 }}
+              enterButton={<Button type="primary" icon="plus" />}
+              onSearch={this.handleAddRoom}
+              onChange={this.handleInput}
+              value={this.state.newRoom}
+            />
+          </Card>
         </Row>
+
+        <Divider orientation="left">Room Dimensions</Divider>
 
         <Row type="flex" gutter={16} style={{ padding: '32px' }}>
           <Col span={6}>
@@ -100,11 +202,7 @@ class App extends Component {
           </Col>
         </Row>
 
-        <div className="divider" />
-
-        <Row type="flex" gutter={16} style={{ padding: '32px 32px 0 32px' }}>
-          <span>Acoustic Properties</span>
-        </Row>
+        <Divider orientation="left">Acoustic Properties</Divider>
 
         <Row type="flex" gutter={16} style={{ padding: '32px 32px 0 32px' }}>
           <VictoryChart
@@ -175,7 +273,7 @@ class App extends Component {
           ))}
         </Row>
 
-        <div className="divider m20" />
+        <Divider />
 
         <Row type="flex" gutter={16} className="grid">
           <Col span={8} className="grid-first-col">
@@ -226,7 +324,7 @@ class App extends Component {
           </Col>
         </Row>
 
-        <div className="divider m20" />
+        <Divider />
       </div>
     )
   }
