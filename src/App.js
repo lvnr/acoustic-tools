@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import { Layout, Row, Col, Input, InputNumber, Radio, Switch, Icon, Button, Select, Divider, Card } from 'antd'
-import { Persist } from 'react-persist'
+import { Persist } from './react-persist'
 import { VictoryArea, VictoryChart, VictoryAxis } from 'victory'
+import _ from 'lodash'
 import Acoustics from './Acoustics'
 import './App.css'
 import db from './db'
@@ -12,18 +13,27 @@ const { Option } = Select
 const FrequencyDomain = [63, 125, 250, 500, 1000, 2000, 4000, 8000]
 
 class App extends Component {
-  state = {
-    project: undefined,
-    room: undefined,
-    newProject: '',
-    newRoom: '',
-    length: 600,
-    width: 400,
-    height: 310,
-    RT60Target: null,
-    customRT60Target: true,
-    measuredRT60: { 63: null, 125: null, 250: null, 500: null, 1000: null, 2000: null, 4000: null, 8000: null },
+  constructor(props) {
+    super(props)
+
+    const project = window.localStorage.getItem('project')
+    const room = window.localStorage.getItem('room')
+
+    this.state = {
+      project,
+      room,
+      newProject: '',
+      newRoom: '',
+      length: null,
+      width: null,
+      height: null,
+      RT60Target: null,
+      customRT60Target: true,
+      measuredRT60: { 63: null, 125: null, 250: null, 500: null, 1000: null, 2000: null, 4000: null, 8000: null },
+    }
   }
+
+  getProjects = () => db.get('projects').value()
 
   kebab = (string) => {
     return string
@@ -33,33 +43,30 @@ class App extends Component {
   }
 
   handleAddRoom = (room) => {
-    const rooms = db
-      .get('rooms')
-      .push({
-        name: room,
-        id: this.kebab(room)
-      })
+    const { project } = this.state
+    db.set(`projects.${project}.rooms.${this.kebab(room)}`, { name: room })
       .write()
     this.setState({ newRoom: null })
   }
 
   handleAddProject = (project) => {
     const projects = db
-      .get('projects')
-      .push({
+      .set(`projects.${this.kebab(project)}`, {
         name: project,
-        id: this.kebab(project)
+        rooms: {},
       })
       .write()
     this.setState({ newProject: null })
   }
 
-  handleRoomChange = (room) => {
-    this.setState({ room })
+  handleProjectChange = (project) => {
+    this.setState({ project, room: null })
+    window.localStorage.setItem('project', project)
   }
 
-  handleProjectChange = (project) => {
-    this.setState({ project })
+  handleRoomChange = (room) => {
+    this.setState({ room })
+    window.localStorage.setItem('room', room)
   }
 
   handleCustomRT60Target = (checked) => {
@@ -82,6 +89,20 @@ class App extends Component {
     this.setState({ measuredRT60: { ...this.state.measuredRT60, [e.target.name]: e.target.value } })
   }
 
+  handlePersistence = () => {
+    const { project, room } = this.state
+    let persistenceKey
+    if (project && room) persistenceKey = project + '__' + room
+    return (
+      <Persist
+        name={persistenceKey}
+        data={this.state}
+        debounce={500}
+        onData={data => { this.setState(data) }}
+      />
+    )
+  }
+
   render() {
     const { project, room, width, length, height, customRT60Target } = this.state
     const dimensions = { width, length, height }
@@ -95,20 +116,16 @@ class App extends Component {
     const TargetRT60 = customRT60Target ? this.state.RT60Target : DIN_RT60
     const A_adds = Acoustics.A_adds(A_eqs, measuredRT60Data, alphas, TargetRT60, volume)
 
-    const projects = db.get('projects').value()
-    const rooms = db.get('rooms').value()
-
-    let persistenceKey = 'room-data'
-    if (project && room) persistenceKey = project + '__' + room
+    const projects = this.getProjects()
+    let rooms
+    if (project && projects[project]) {
+      rooms = projects[project]['rooms']
+    }
 
     return (
       <div className="App">
-        <Persist
-          name={persistenceKey}
-          data={this.state}
-          debounce={500}
-          onMount={data => this.setState(data)}
-        />
+
+        {this.handlePersistence()}
 
         <Divider orientation="left">Project & Room</Divider>
 
@@ -126,7 +143,7 @@ class App extends Component {
               filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
               value={this.state.project}
             >
-              {projects.map((project, i) => <Option key={i} value={project.id}>{project.name}</Option>)}
+              {_.map(projects, (project, id) => <Option key={id} value={id}>{project.name}</Option>)}
             </Select>
             <Divider type="vertical" />
             <Input.Search
@@ -151,7 +168,7 @@ class App extends Component {
               filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
               value={this.state.room}
             >
-              {rooms.map((room, i) => <Option key={i} value={room.id}>{room.name}</Option>)}
+              {_.map(rooms, (room, id) => <Option key={id} value={id}>{room.name}</Option>)}
             </Select>
             <Divider type="vertical" />
             <Input.Search

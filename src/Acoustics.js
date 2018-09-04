@@ -52,7 +52,6 @@ class Acoustics {
       const log = new Log(start, end)
       return _.round(log.interp(Number(V)), 2)
     } catch (e) {
-      console.log(e)
       return null
     }
   }
