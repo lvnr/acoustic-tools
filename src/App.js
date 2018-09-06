@@ -4,6 +4,7 @@ import { Persist } from './react-persist'
 import { VictoryArea, VictoryChart, VictoryAxis } from 'victory'
 import _ from 'lodash'
 import Acoustics from './Acoustics'
+import Absorber from './Absorber'
 import './App.css'
 import db from './db'
 
@@ -30,6 +31,7 @@ class App extends Component {
       RT60Target: null,
       customRT60Target: true,
       measuredRT60: { 63: null, 125: null, 250: null, 500: null, 1000: null, 2000: null, 4000: null, 8000: null },
+      absorbers: [],
     }
   }
 
@@ -40,6 +42,39 @@ class App extends Component {
       .replace(/([a-z])([A-Z])/g, '$1-$2')    // get all lowercase letters that are near to uppercase ones
       .replace(/[\s_]+/g, '-')                // replace all spaces and low dash
       .toLowerCase()                          // convert to lower case
+  }
+
+  handleAddAbsorber = () => {
+    const newAbsorber = {
+      name: 'Custom',
+      type: 'custom',
+      coefficients: {},
+    }
+    this.setState({ absorbers: [ ...this.state.absorbers, newAbsorber ]})
+  }
+
+  handleAbsorberUpdate = (index, field, value) => {
+    let absorbers = [ ...this.state.absorbers ]
+    absorbers[index] = { ...absorbers[index], [field]: value }
+    this.setState({ absorbers })
+  }
+
+  handleAbsorberRemoval = (index) => {
+    let absorbers = [ ...this.state.absorbers ]
+    _.pullAt(absorbers, index)
+    this.setState({ absorbers })
+  }
+
+  handleCoefficientUpdate = (index, coefficients) => {
+    let absorbers = [ ...this.state.absorbers ]
+    absorbers[index] = { ...absorbers[index], coefficients }
+    this.setState({ absorbers })
+  }
+
+  handleAbsorberSelect = (index, absorber) => {
+    let absorbers = [ ...this.state.absorbers ]
+    absorbers[index] = { ...absorber }
+    this.setState({ absorbers })
   }
 
   handleAddRoom = (room) => {
@@ -104,7 +139,7 @@ class App extends Component {
   }
 
   render() {
-    const { project, room, width, length, height, customRT60Target } = this.state
+    const { project, room, width, length, height, absorbers, customRT60Target } = this.state
     const dimensions = { width, length, height }
 
     const surfaceAreas = Acoustics.surfaceAreas(dimensions)
@@ -221,26 +256,6 @@ class App extends Component {
 
         <Divider orientation="left">Acoustic Properties</Divider>
 
-        <Row type="flex" gutter={16} style={{ padding: '32px 32px 0 32px' }}>
-          <VictoryChart
-            height={200}
-            width={400}
-          >
-            <VictoryAxis
-              tickValues={FrequencyDomain}
-              scale={{ x: 'log', y: 'linear' }}
-            />
-            <VictoryAxis dependentAxis />
-            <VictoryArea
-              // interpolation="natural"
-              x="frequency"
-              y="RT60"
-              domain={{ x: [63, 8000] }}
-              data={measuredRT60Data}
-            />
-          </VictoryChart>
-        </Row>
-
         <Row type="flex" gutter={16} style={{ textAlign: 'center' }}>
           <Col span={8}> </Col>
           {FrequencyDomain.map(hz => (
@@ -281,13 +296,66 @@ class App extends Component {
 
         <Row type="flex" gutter={16} className="grid">
           <Col span={8} className="grid-first-col">
-            <strong>Additional Absorption Areas</strong> &nbsp; (Aeq / m<sup>2</sup>)
+            <strong>Additional Absorption Areas</strong> &nbsp; (Aadd / m<sup>2</sup>)
           </Col>
           {FrequencyDomain.map(hz => (
             <Col span={2} key={hz} className="grid-col">
               {A_adds[hz] || '-'}
             </Col>
           ))}
+        </Row>
+
+        <Divider>Additional Absorption</Divider>
+
+        {absorbers.map((absorber, i) => (
+          <Absorber
+            key={i}
+            index={i}
+            {...absorber}
+            onValueUpdate={this.handleAbsorberUpdate}
+            onRemove={this.handleAbsorberRemoval}
+            onCoefficientUpdate={this.handleCoefficientUpdate}
+            onAbsorberSelect={this.handleAbsorberSelect}
+          />
+        ))}
+
+        <Row type="flex" gutter={16} className="grid" style={{ justifyContent: 'center', margin: '10px 0' }}>
+          <Button type="dashed" size="large" icon="plus" onClick={this.handleAddAbsorber} style={{ padding: '5px 20px' }}>
+            Add new absorber
+          </Button>
+        </Row>
+
+        <Divider />
+
+        <Row type="flex" gutter={16} className="grid">
+          <Col span={8} className="grid-first-col">
+            <strong>Remaining Add. Absorption Required</strong> &nbsp; (A / m<sup>2</sup>)
+          </Col>
+          {FrequencyDomain.map(hz => (
+            <Col span={2} key={hz} className="grid-col">
+              {A_adds[hz] || '-'}
+            </Col>
+          ))}
+        </Row>
+
+        <Row type="flex" gutter={16} style={{ padding: '32px 32px 0 32px' }}>
+          <VictoryChart
+            height={200}
+            width={400}
+          >
+            <VictoryAxis
+              tickValues={FrequencyDomain}
+              scale={{ x: 'log', y: 'linear' }}
+            />
+            <VictoryAxis dependentAxis />
+            <VictoryArea
+              interpolation="natural"
+              x="frequency"
+              y="RT60"
+              domain={{ x: [63, 8000] }}
+              data={measuredRT60Data}
+            />
+          </VictoryChart>
         </Row>
 
         <Divider />

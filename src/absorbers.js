@@ -1,0 +1,70 @@
+const knaufMarkant = [
+  {
+    name: 'Quadril Tile, 12x12mm Square Perf., No wool, D-200mm',
+    type: 'knauf-markant-quadril-12x12-sq-hole-no-wool-d200',
+    width: null,
+    height: null,
+    coefficients: {
+        63: .30,
+       125: .45,
+       250: .60,
+       500: .70,
+      1000: .65,
+      2000: .60,
+      4000: .45,
+      8000: .35,
+    },
+  },
+  {
+    name: 'Quadril Tile, 12x12mm Square Perf., No wool, D-65mm',
+    type: 'knauf-markant-quadril-12x12-sq-hole-no-wool-d65',
+    width: null,
+    height: null,
+    coefficients: {
+        63: .05,
+       125: .15,
+       250: .30,
+       500: .60,
+      1000: .80,
+      2000: .60,
+      4000: .40,
+      8000: .20,
+    },
+  },
+  {
+    name: 'Quadril Tile, 12x12mm Square Perf., 50mm wool, D-200mm',
+    type: 'knauf-markant-quadril-12x12-sq-hole-50mm-wool-d200',
+    width: null,
+    height: null,
+    coefficients: {
+        63: .25,
+       125: .55,
+       250: .80,
+       500: .85,
+      1000: .70,
+      2000: .70,
+      4000: .55,
+      8000: .40,
+    },
+  },
+  {
+    name: 'Quadril Tile, 12x12mm Square Perf., 50mm wool, D-65mm',
+    type: 'knauf-markant-quadril-12x12-sq-hole-50mm-wool-d65',
+    width: null,
+    height: null,
+    coefficients: {
+        63: .15,
+       125: .40,
+       250: .65,
+       500: .75,
+      1000: .70,
+      2000: .65,
+      4000: .50,
+      8000: .30,
+    },
+  },
+]
+
+export default {
+  'KNAUF Markant': knaufMarkant,
+}
