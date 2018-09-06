@@ -1,5 +1,8 @@
 import _ from 'lodash'
 import Interp from './Interp'
+import { getFrequencyDomain } from './helpers'
+
+const FrequencyDomain = getFrequencyDomain()
 
 const { Point, Log } = Interp
 
@@ -124,6 +127,38 @@ class Acoustics {
     })
 
     return A_adds
+  }
+
+  static A_eq_absorbers = (absorbers) => {
+    let A_eq = {}
+
+    _.map(FrequencyDomain, hz => {
+      const totalEqAbsorptionAtFrequency = _.reduce(absorbers, (sum, absorber) => {
+        const { width, height, coefficients } = absorber
+        if (!width || !height || !coefficients) return sum
+        const alpha = coefficients[hz] || 0
+        const S = (width / 100) * (height / 100)
+        const A_eq = Acoustics.A_eq(alpha, S)
+        return sum + A_eq
+      }, 0)
+
+      A_eq[hz] = _.round(totalEqAbsorptionAtFrequency, 2)
+    })
+
+    return A_eq
+  }
+
+  static resultingRT60 = (A_eqs, A_eq_absorbers, volume) => {
+    let RT60s = {}
+
+    _.map(FrequencyDomain, hz => {
+      const A_eq_add = A_eq_absorbers[hz]
+      const A_eq_final = A_eqs[hz] + A_eq_add
+      const newRT60 = Acoustics.RT60(volume, A_eq_final)
+      RT60s[hz] = _.round(newRT60, 2)
+    })
+
+    return RT60s
   }
 }
 

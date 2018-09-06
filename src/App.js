@@ -7,11 +7,12 @@ import Acoustics from './Acoustics'
 import Absorber from './Absorber'
 import './App.css'
 import db from './db'
+import { getFrequencyDomain } from './helpers'
 
 const { Content } = Layout
 const { Option } = Select
 
-const FrequencyDomain = [63, 125, 250, 500, 1000, 2000, 4000, 8000]
+const FrequencyDomain = getFrequencyDomain()
 
 class App extends Component {
   constructor(props) {
@@ -150,6 +151,8 @@ class App extends Component {
     const DIN_RT60 = Acoustics.getTargetRT60(this.state.roomType || 'A1', volume)
     const TargetRT60 = customRT60Target ? this.state.RT60Target : DIN_RT60
     const A_adds = Acoustics.A_adds(A_eqs, measuredRT60Data, alphas, TargetRT60, volume)
+    const A_eq_absorbers = Acoustics.A_eq_absorbers(absorbers)
+    const resultingRT60 = Acoustics.resultingRT60(A_eqs, A_eq_absorbers, volume)
 
     const projects = this.getProjects()
     let rooms
@@ -325,6 +328,17 @@ class App extends Component {
           </Button>
         </Row>
 
+        <Row type="flex" gutter={16} className="grid">
+          <Col span={8} className="grid-first-col">
+            <strong>Total A<sub>eq</sub></strong> &nbsp; (m<sup>2</sup>)
+          </Col>
+          {FrequencyDomain.map(hz => (
+            <Col span={2} key={hz} className="grid-col">
+              {A_eq_absorbers[hz] || '-'}
+            </Col>
+          ))}
+        </Row>
+
         <Divider />
 
         <Row type="flex" gutter={16} className="grid">
@@ -333,7 +347,18 @@ class App extends Component {
           </Col>
           {FrequencyDomain.map(hz => (
             <Col span={2} key={hz} className="grid-col">
-              {A_adds[hz] || '-'}
+              {A_adds[hz] - A_eq_absorbers[hz] || 0}
+            </Col>
+          ))}
+        </Row>
+
+        <Row type="flex" gutter={16} className="grid">
+          <Col span={8} className="grid-first-col">
+            <strong>Resulting RT60</strong> &nbsp; (T / s)
+          </Col>
+          {FrequencyDomain.map(hz => (
+            <Col span={2} key={hz} className="grid-col">
+              {resultingRT60[hz] || '-'}
             </Col>
           ))}
         </Row>

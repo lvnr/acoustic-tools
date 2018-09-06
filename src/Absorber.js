@@ -2,10 +2,9 @@ import React, { Component } from 'react'
 import { Row, Col, InputNumber, Input, Button, Cascader } from 'antd'
 import _ from 'lodash'
 import absorbers from './absorbers'
+import { getFrequencyDomain } from './helpers'
 
-// const { Option, OptGroup } = Select
-
-const FrequencyDomain = [63, 125, 250, 500, 1000, 2000, 4000, 8000]
+const FrequencyDomain = getFrequencyDomain()
 
 const absorberOptions = _.map(absorbers, (absorberGroup, label) => {
   return {
