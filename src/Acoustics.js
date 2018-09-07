@@ -148,7 +148,7 @@ class Acoustics {
     return A_eq
   }
 
-  static resultingRT60 = (A_eqs, A_eq_absorbers, volume) => {
+  static effectiveRT60 = (A_eqs, A_eq_absorbers, volume) => {
     let RT60s = {}
 
     _.map(FrequencyDomain, hz => {

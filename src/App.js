@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Layout, Row, Col, Input, InputNumber, Radio, Switch, Icon, Button, Select, Divider, Card } from 'antd'
 import { Persist } from './react-persist'
-import { VictoryArea, VictoryChart, VictoryAxis } from 'victory'
+import { VictoryArea, VictoryChart, VictoryAxis, VictoryGroup, VictoryLine } from 'victory'
 import _ from 'lodash'
 import Acoustics from './Acoustics'
 import Absorber from './Absorber'
@@ -33,6 +33,10 @@ class App extends Component {
       customRT60Target: true,
       measuredRT60: { 63: null, 125: null, 250: null, 500: null, 1000: null, 2000: null, 4000: null, 8000: null },
       absorbers: [],
+      showMeasuredRT60: true,
+      showEffectiveRT60: true,
+      showTargetRT60: true,
+      showAllowedDeviation: true,
     }
   }
 
@@ -43,6 +47,10 @@ class App extends Component {
       .replace(/([a-z])([A-Z])/g, '$1-$2')    // get all lowercase letters that are near to uppercase ones
       .replace(/[\s_]+/g, '-')                // replace all spaces and low dash
       .toLowerCase()                          // convert to lower case
+  }
+
+  handleChartOption = (option, checked) => {
+    this.setState({ [option]: checked })
   }
 
   handleAddAbsorber = () => {
@@ -145,14 +153,15 @@ class App extends Component {
 
     const surfaceAreas = Acoustics.surfaceAreas(dimensions)
     const volume = Acoustics.volume(dimensions)
-    const measuredRT60Data = FrequencyDomain.map(hz => ({ frequency: hz, RT60: Number(this.state.measuredRT60[hz]) }))
-    const A_eqs = Acoustics.A_eqs(measuredRT60Data, volume)
+    const measuredRT60Formatted = FrequencyDomain.map(hz => ({ frequency: hz, RT60: Number(this.state.measuredRT60[hz]) || 0 }))
+    const A_eqs = Acoustics.A_eqs(measuredRT60Formatted, volume)
     const alphas = Acoustics.alphas(A_eqs, surfaceAreas.total)
     const DIN_RT60 = Acoustics.getTargetRT60(this.state.roomType || 'A1', volume)
     const TargetRT60 = customRT60Target ? this.state.RT60Target : DIN_RT60
-    const A_adds = Acoustics.A_adds(A_eqs, measuredRT60Data, alphas, TargetRT60, volume)
+    const A_adds = Acoustics.A_adds(A_eqs, measuredRT60Formatted, alphas, TargetRT60, volume)
     const A_eq_absorbers = Acoustics.A_eq_absorbers(absorbers)
-    const resultingRT60 = Acoustics.resultingRT60(A_eqs, A_eq_absorbers, volume)
+    const effectiveRT60 = Acoustics.effectiveRT60(A_eqs, A_eq_absorbers, volume)
+    const effectiveRT60Formatted = FrequencyDomain.map(hz => ({ frequency: hz, RT60: Number(effectiveRT60[hz]) || 0 }))
 
     const projects = this.getProjects()
     let rooms
@@ -347,7 +356,7 @@ class App extends Component {
           </Col>
           {FrequencyDomain.map(hz => (
             <Col span={2} key={hz} className="grid-col">
-              {A_adds[hz] - A_eq_absorbers[hz] || 0}
+              {_.round(A_adds[hz] - A_eq_absorbers[hz], 2) || 0}
             </Col>
           ))}
         </Row>
@@ -358,7 +367,7 @@ class App extends Component {
           </Col>
           {FrequencyDomain.map(hz => (
             <Col span={2} key={hz} className="grid-col">
-              {resultingRT60[hz] || '-'}
+              {effectiveRT60[hz] || '-'}
             </Col>
           ))}
         </Row>
@@ -367,20 +376,99 @@ class App extends Component {
           <VictoryChart
             height={200}
             width={400}
+            animate={{
+              duration: 1000,
+              onLoad: { duration: 500 }
+            }}
+            style={{
+              labels: {
+                fontSize: 8,
+              },
+              parent: {
+                border: "1px solid #e8e8e8",
+                borderRadius: "6px",
+              }
+            }}
           >
             <VictoryAxis
               tickValues={FrequencyDomain}
+              label="Frequency (Hz)"
               scale={{ x: 'log', y: 'linear' }}
+              style={{
+                axis: { stroke: '#000' },
+                axisLabel: { fontSize: 8 },
+                grid: { stroke: '#eee' },
+                ticks: { stroke: '#000', size: 3 },
+                tickLabels: { fontSize: 7, padding: 5 }
+              }}
+              tickFormat={(t) => t < 1000 ? t : `${t/1000}k`}
             />
-            <VictoryAxis dependentAxis />
-            <VictoryArea
-              interpolation="natural"
-              x="frequency"
-              y="RT60"
-              domain={{ x: [63, 8000] }}
-              data={measuredRT60Data}
+            <VictoryAxis
+              dependentAxis
+              label="Reverberation Time (s)"
+              style={{
+                axis: { stroke: '#000' },
+                axisLabel: { fontSize: 8 },
+                grid: { stroke: '#eee' },
+                ticks: { stroke: '#000', size: 3 },
+                tickLabels: { fontSize: 7, padding: 5 }
+              }}
             />
+            <VictoryGroup>
+              {this.state.showMeasuredRT60 && <VictoryArea
+                style={{
+                  data: {
+                    fill: "#ccc", fillOpacity: 0.8,
+                  },
+                  labels: {
+                    fontSize: 8,
+                    fill: "#ccc"
+                  }
+                }}
+                labels={(d) => d.RT60}
+                interpolation="natural"
+                x="frequency"
+                y="RT60"
+                domain={{ x: [63, 8000] }}
+                data={measuredRT60Formatted}
+              />}
+              {this.state.showEffectiveRT60 && <VictoryArea
+                interpolation="natural"
+                x="frequency"
+                y="RT60"
+                style={{ data: { background: 'blue' } }}
+                domain={{ x: [63, 8000] }}
+                data={effectiveRT60Formatted}
+              />}
+              {this.state.showTargetRT60 && <VictoryLine
+                style={{ data: { stroke: 'red' } }}
+                data={[
+                  { x: 63, y: TargetRT60 },
+                  { x: 8000, y: TargetRT60 },
+                ]}
+              />}
+            </VictoryGroup>
           </VictoryChart>
+        </Row>
+
+
+        <Row type="flex" gutter={16} style={{ textAlign: 'center', marginTop: '20px' }}>
+          <Col span={6}>
+            <strong>Measured RT60</strong> &nbsp;
+            <Switch checked={this.state.showMeasuredRT60} onChange={c => this.handleChartOption('showMeasuredRT60', c)} />
+          </Col>
+          <Col span={6}>
+            <strong>Effective RT60</strong> &nbsp;
+            <Switch checked={this.state.showEffectiveRT60} onChange={c => this.handleChartOption('showEffectiveRT60', c)} />
+          </Col>
+          <Col span={6}>
+            <strong>Target RT60</strong> &nbsp;
+            <Switch checked={this.state.showTargetRT60} onChange={c => this.handleChartOption('showTargetRT60', c)} />
+          </Col>
+          <Col span={6}>
+            <strong>Allowed Deviation</strong> &nbsp;
+            <Switch checked={this.state.showAllowedDeviation} onChange={c => this.handleChartOption('showAllowedDeviation', c)} />
+          </Col>
         </Row>
 
         <Divider />
