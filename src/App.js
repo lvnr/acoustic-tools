@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import { Layout, Row, Col, Input, InputNumber, Radio, Switch, Icon, Button, Select, Divider, Card } from 'antd'
 import { Persist } from './react-persist'
-import { VictoryArea, VictoryChart, VictoryAxis, VictoryGroup, VictoryLine } from 'victory'
 import _ from 'lodash'
 import Acoustics from './Acoustics'
 import Absorber from './Absorber'
+import Chart from './Chart'
 import './App.css'
 import db from './db'
 import { getFrequencyDomain } from './helpers'
@@ -373,82 +373,19 @@ class App extends Component {
         </Row>
 
         <Row type="flex" gutter={16} style={{ padding: '32px 32px 0 32px' }}>
-          <VictoryChart
-            height={200}
-            width={400}
-            animate={{
-              duration: 1000,
-              onLoad: { duration: 500 }
+          <Chart
+            state={{
+              showMeasuredRT60: this.state.showMeasuredRT60,
+              showTargetRT60: this.state.showTargetRT60,
+              showEffectiveRT60: this.state.showEffectiveRT60,
+              showAllowedDeviation: this.state.showAllowedDeviation,
             }}
-            style={{
-              labels: {
-                fontSize: 8,
-              },
-              parent: {
-                border: "1px solid #e8e8e8",
-                borderRadius: "6px",
-              }
+            data={{
+              TargetRT60,
+              measuredRT60Formatted,
+              effectiveRT60Formatted,
             }}
-          >
-            <VictoryAxis
-              tickValues={FrequencyDomain}
-              label="Frequency (Hz)"
-              scale={{ x: 'log', y: 'linear' }}
-              style={{
-                axis: { stroke: '#000' },
-                axisLabel: { fontSize: 8 },
-                grid: { stroke: '#eee' },
-                ticks: { stroke: '#000', size: 3 },
-                tickLabels: { fontSize: 7, padding: 5 }
-              }}
-              tickFormat={(t) => t < 1000 ? t : `${t/1000}k`}
-            />
-            <VictoryAxis
-              dependentAxis
-              label="Reverberation Time (s)"
-              style={{
-                axis: { stroke: '#000' },
-                axisLabel: { fontSize: 8 },
-                grid: { stroke: '#eee' },
-                ticks: { stroke: '#000', size: 3 },
-                tickLabels: { fontSize: 7, padding: 5 }
-              }}
-            />
-            <VictoryGroup>
-              {this.state.showMeasuredRT60 && <VictoryArea
-                style={{
-                  data: {
-                    fill: "#ccc", fillOpacity: 0.8,
-                  },
-                  labels: {
-                    fontSize: 8,
-                    fill: "#ccc"
-                  }
-                }}
-                labels={(d) => d.RT60}
-                interpolation="natural"
-                x="frequency"
-                y="RT60"
-                domain={{ x: [63, 8000] }}
-                data={measuredRT60Formatted}
-              />}
-              {this.state.showEffectiveRT60 && <VictoryArea
-                interpolation="natural"
-                x="frequency"
-                y="RT60"
-                style={{ data: { background: 'blue' } }}
-                domain={{ x: [63, 8000] }}
-                data={effectiveRT60Formatted}
-              />}
-              {this.state.showTargetRT60 && <VictoryLine
-                style={{ data: { stroke: 'red' } }}
-                data={[
-                  { x: 63, y: TargetRT60 },
-                  { x: 8000, y: TargetRT60 },
-                ]}
-              />}
-            </VictoryGroup>
-          </VictoryChart>
+          />
         </Row>
 
 
