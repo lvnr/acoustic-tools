@@ -36,7 +36,7 @@ class App extends Component {
       showMeasuredRT60: true,
       showEffectiveRT60: true,
       showTargetRT60: true,
-      showAllowedDeviation: true,
+      showRT60Tolerances: true,
     }
   }
 
@@ -162,6 +162,7 @@ class App extends Component {
     const A_eq_absorbers = Acoustics.A_eq_absorbers(absorbers)
     const effectiveRT60 = Acoustics.effectiveRT60(A_eqs, A_eq_absorbers, volume)
     const effectiveRT60Formatted = FrequencyDomain.map(hz => ({ frequency: hz, RT60: Number(effectiveRT60[hz]) || 0 }))
+    const RT60Tolerances = Acoustics.getRT60Tolerances(TargetRT60)
 
     const projects = this.getProjects()
     let rooms
@@ -378,16 +379,16 @@ class App extends Component {
               showMeasuredRT60: this.state.showMeasuredRT60,
               showTargetRT60: this.state.showTargetRT60,
               showEffectiveRT60: this.state.showEffectiveRT60,
-              showAllowedDeviation: this.state.showAllowedDeviation,
+              showRT60Tolerances: this.state.showRT60Tolerances,
             }}
             data={{
               TargetRT60,
               measuredRT60Formatted,
               effectiveRT60Formatted,
+              RT60Tolerances,
             }}
           />
         </Row>
-
 
         <Row type="flex" gutter={16} style={{ textAlign: 'center', marginTop: '20px' }}>
           <Col span={6}>
@@ -403,8 +404,8 @@ class App extends Component {
             <Switch checked={this.state.showTargetRT60} onChange={c => this.handleChartOption('showTargetRT60', c)} />
           </Col>
           <Col span={6}>
-            <strong>Allowed Deviation</strong> &nbsp;
-            <Switch checked={this.state.showAllowedDeviation} onChange={c => this.handleChartOption('showAllowedDeviation', c)} />
+            <strong>Tolerances</strong> &nbsp;
+            <Switch checked={this.state.showRT60Tolerances} onChange={c => this.handleChartOption('showRT60Tolerances', c)} />
           </Col>
         </Row>
 

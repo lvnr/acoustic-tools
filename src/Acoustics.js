@@ -59,6 +59,23 @@ class Acoustics {
     }
   }
 
+  static getRT60Tolerances = (T) => {
+    const RT60Tolerances = {}
+    const tolerances = {
+        63: [.5, 1.7],
+       125: [.65, 1.45],
+       250: [.8, 1.2],
+       500: [.8, 1.2],
+      1000: [.8, 1.2],
+      2000: [.8, 1.2],
+      4000: [.65, 1.2],
+      8000: [.5, 1.2],
+    }
+    _.map(tolerances, (t, hz) => RT60Tolerances[hz] = [t[0] * T, t[1] * T])
+
+    return RT60Tolerances
+  }
+
   static surfaceAreas = (dimensions) => {
     const width = dimensions.width / 100
     const height = dimensions.height / 100
