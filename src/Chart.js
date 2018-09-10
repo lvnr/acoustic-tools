@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { VictoryArea, VictoryChart, VictoryAxis, VictoryGroup, VictoryLine } from 'victory'
 import { getFrequencyDomain } from './helpers'
 

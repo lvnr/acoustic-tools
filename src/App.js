@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Layout, Row, Col, Input, InputNumber, Radio, Switch, Icon, Button, Select, Divider, Card } from 'antd'
+import { Row, Col, Input, InputNumber, Radio, Switch, Icon, Button, Select, Divider, Card } from 'antd'
 import { Persist } from './react-persist'
 import _ from 'lodash'
 import Acoustics from './Acoustics'
@@ -9,7 +9,6 @@ import './App.css'
 import db from './db'
 import { getFrequencyDomain } from './helpers'
 
-const { Content } = Layout
 const { Option } = Select
 
 const FrequencyDomain = getFrequencyDomain()
@@ -94,7 +93,7 @@ class App extends Component {
   }
 
   handleAddProject = (project) => {
-    const projects = db
+    db
       .set(`projects.${this.kebab(project)}`, {
         name: project,
         rooms: {},
@@ -148,7 +147,7 @@ class App extends Component {
   }
 
   render() {
-    const { project, room, width, length, height, absorbers, customRT60Target } = this.state
+    const { project, width, length, height, absorbers, customRT60Target } = this.state
     const dimensions = { width, length, height }
 
     const surfaceAreas = Acoustics.surfaceAreas(dimensions)

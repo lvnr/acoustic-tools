@@ -6,8 +6,6 @@ const FrequencyDomain = getFrequencyDomain()
 
 const { Point, Log } = Interp
 
-const format = (num) => Math.round(num)
-
 const K_FACTOR = 0.161
 
 // Target RT60 values recommended by DIN18041 standard for depending on room usage

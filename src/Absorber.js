@@ -1,5 +1,5 @@
-import React, { Component } from 'react'
-import { Row, Col, InputNumber, Input, Button, Cascader } from 'antd'
+import React from 'react'
+import { Row, Col, Input, Button, Cascader } from 'antd'
 import _ from 'lodash'
 import absorbers from './absorbers'
 import { getFrequencyDomain } from './helpers'
