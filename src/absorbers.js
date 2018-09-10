@@ -65,6 +65,42 @@ const knaufMarkant = [
   },
 ]
 
+const armourcoat = [
+  {
+    name: 'Acoustic Plaster, 50mm System',
+    type: 'armourcoat-acoustic-plaster-50mm-system',
+    width: null,
+    height: null,
+    coefficients: {
+        63: .07,
+       125: .32,
+       250: .79,
+       500: .91,
+      1000: .96,
+      2000: .95,
+      4000: .83,
+      8000: .70,
+    },
+  },
+  {
+    name: 'Acoustic Plaster, 30mm System',
+    type: 'armourcoat-acoustic-plaster-30mm-system',
+    width: null,
+    height: null,
+    coefficients: {
+        63: .03,
+       125: .13,
+       250: .44,
+       500: .84,
+      1000: .97,
+      2000: .91,
+      4000: .80,
+      8000: .65,
+    },
+  },
+]
+
 export default {
   'KNAUF Markant': knaufMarkant,
+  'ARMOURCOAT': armourcoat,
 }
