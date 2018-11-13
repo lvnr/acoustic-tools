@@ -100,7 +100,43 @@ const armourcoat = [
   },
 ]
 
+const ecophon = [
+  {
+    name: 'Ecophon Master™ Matrix, 40mm, 255mm o.d.s',
+    type: 'ecophon-master-matrix-40mm-255mmODS-system',
+    width: null,
+    height: null,
+    coefficients: {
+        63: .20,
+       125: .55,
+       250: .85,
+       500: .85,
+      1000: 1.0,
+      2000: 1.0,
+      4000: 1.0,
+      8000: 1.0,
+    },
+  },
+  {
+    name: 'Ecophon Master™ Matrix, 40mm, 300mm o.d.s',
+    type: 'ecophon-master-matrix-40mm-300mmODS-system',
+    width: null,
+    height: null,
+    coefficients: {
+        63: .25,
+       125: .60,
+       250: .80,
+       500: .90,
+      1000: 1.0,
+      2000: 1.0,
+      4000: 1.0,
+      8000: 1.0,
+    },
+  },
+]
+
 export default {
   'KNAUF Markant': knaufMarkant,
   'ARMOURCOAT': armourcoat,
+  'Ecophon': ecophon,
 }
