@@ -236,31 +236,40 @@ class App extends Component {
 
         <Row type="flex" gutter={16} style={{ padding: '32px' }}>
           <Col span={6}>
-            <Input
-              name="length"
-              size="large"
-              placeholder="length (cm)"
-              onChange={this.handleInput}
-              value={this.state.length}
-            />
-            <Input
-              name="width"
-              size="large"
-              placeholder="width (cm)"
-              onChange={this.handleInput}
-              value={this.state.width}
-            />
-            <Input
-              name="height"
-              size="large"
-              placeholder="height (cm)"
-              onChange={this.handleInput}
-              value={this.state.height}
-            />
+            <Row>
+              <Input
+                name="length"
+                size="large"
+                placeholder="length (cm)"
+                onChange={this.handleInput}
+                value={this.state.length}
+              />
+            </Row>
+            <Row style={{ marginTop: 10 }}>
+              <Input
+                name="width"
+                size="large"
+                placeholder="width (cm)"
+                onChange={this.handleInput}
+                value={this.state.width}
+              />
+            </Row>
+            <Row style={{ marginTop: 10 }}>
+              <Input
+                name="height"
+                size="large"
+                placeholder="height (cm)"
+                onChange={this.handleInput}
+                value={this.state.height}
+              />
+            </Row>
           </Col>
         </Row>
 
         <Row type="flex" gutter={16} style={{ padding: '32px' }}>
+          <Col span={6}>
+            Floor Surface Area: {surfaceAreas ? surfaceAreas.floor : 0} m<sup>2</sup>
+          </Col>
           <Col span={6}>
             Total Surface Area: {surfaceAreas ? surfaceAreas.total : 0} m<sup>2</sup>
           </Col>
