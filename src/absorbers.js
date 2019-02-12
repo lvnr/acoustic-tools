@@ -238,6 +238,23 @@ const theFoamFactory = [
     },
   },
   {
+    name: '3" Pyramid Foam | 24" x 24", 12 Pack',
+    type: 'the-foam-factory-acoustic-foam-pyramid-3x24x24',
+    quantity: 1,
+    price: 86.99,
+    area: 4.46,
+    sabins: {
+        63: 0.4,
+       125: 1.12,
+       250: 2.1,
+       500: 3.7,
+      1000: 3.65,
+      2000: 4.1,
+      4000: 4.64,
+      8000: 4.0,
+    },
+  },
+  {
     name: '4" Pyramid Foam',
     type: 'the-foam-factory-acoustic-foam-pyramid-4-inch',
     width: null,

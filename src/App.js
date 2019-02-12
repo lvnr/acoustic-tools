@@ -5,6 +5,7 @@ import _ from 'lodash'
 import Acoustics from './Acoustics'
 import Absorber from './Absorber'
 import Chart from './Chart'
+import Room3D from './Room3D'
 import './App.css'
 import db from './db'
 import { getFrequencyDomain } from './helpers'
@@ -166,6 +167,18 @@ class App extends Component {
     const effectiveRT60Formatted = FrequencyDomain.map(hz => ({ frequency: hz, RT60: Number(effectiveRT60[hz]) || 0 }))
     const RT60Tolerances = Acoustics.getRT60Tolerances(TargetRT60)
 
+    const cost = absorbers.reduce((sum, a) => {
+      if (a.price && a.sabins)
+        return sum + Number(a.price * a.quantity)
+
+      if (a.price && a.coefficients && a.width && a.height) {
+        const area = (Number(a.width) / 100) * (Number(a.height) / 100)
+        return sum + a.price * area
+      }
+
+      return sum
+    }, 0)
+
     const projects = this.getProjects()
     let rooms
     if (project && projects[project]) {
@@ -242,7 +255,7 @@ class App extends Component {
                 size="large"
                 placeholder="length (cm)"
                 onChange={this.handleInput}
-                value={this.state.length}
+                value={length}
               />
             </Row>
             <Row style={{ marginTop: 10 }}>
@@ -251,7 +264,7 @@ class App extends Component {
                 size="large"
                 placeholder="width (cm)"
                 onChange={this.handleInput}
-                value={this.state.width}
+                value={width}
               />
             </Row>
             <Row style={{ marginTop: 10 }}>
@@ -260,7 +273,7 @@ class App extends Component {
                 size="large"
                 placeholder="height (cm)"
                 onChange={this.handleInput}
-                value={this.state.height}
+                value={height}
               />
             </Row>
           </Col>
@@ -358,6 +371,12 @@ class App extends Component {
               {A_eq_absorbers[hz] || '-'}
             </Col>
           ))}
+        </Row>
+
+        <Row type="flex" gutter={16} className="grid">
+          <Col span={12} className="grid-first-col">
+            <strong>Total Cost</strong> &nbsp; &#36; {_.round(cost, 2)}
+          </Col>
         </Row>
 
         <Divider />

@@ -17,7 +17,7 @@ const absorberOptions = _.map(absorbers, (absorberGroup, label) => {
   }
 })
 
-const Absorber = ({ index, name, width, height, quantity, type, selection, coefficients, sabins, onValueUpdate, onRemove, onCoefficientUpdate, onAbsorberSelect }) => {
+const Absorber = ({ index, price, width, height, quantity, type, selection, coefficients, sabins, onValueUpdate, onRemove, onCoefficientUpdate, onAbsorberSelect }) => {
   const onUpdate = (e) => {
     onValueUpdate(index, e.target.name, e.target.value)
   }
@@ -58,7 +58,7 @@ const Absorber = ({ index, name, width, height, quantity, type, selection, coeff
       <Col span={8}>
         {sabins && (
           <Row gutter={16}>
-            <Col span={24}>
+            <Col span={price && quantity ? 16 : 24}>
               <Input
                 type="number"
                 name="quantity"
@@ -68,11 +68,16 @@ const Absorber = ({ index, name, width, height, quantity, type, selection, coeff
                 value={quantity}
               />
             </Col>
+            {price && quantity && (
+              <Col span={8} style={{ lineHeight: '40px', textAlign: 'center', background: '#1890ff', color: 'white', borderRadius: '4px' }}>
+                &#36;<strong>{_.round(price * Number(quantity), 2)}</strong>
+              </Col>
+            )}
           </Row>
         )}
         {coefficients && (
           <Row gutter={16}>
-            <Col span={12}>
+            <Col span={price ? 8 : 12}>
               <Input
                 type="number"
                 name="width"
@@ -82,7 +87,7 @@ const Absorber = ({ index, name, width, height, quantity, type, selection, coeff
                 value={width}
               />
             </Col>
-            <Col span={12}>
+            <Col span={price ? 8 : 12}>
               <Input
                 type="number"
                 name="height"
@@ -92,6 +97,11 @@ const Absorber = ({ index, name, width, height, quantity, type, selection, coeff
                 value={height}
               />
             </Col>
+            {price && width && height && (
+              <Col span={8} style={{ lineHeight: '40px', textAlign: 'center', background: '#1890ff', color: 'white', borderRadius: '4px' }}>
+                &#36;<strong>{_.round(price * (Number(width) / 100) * (Number(height) / 100), 2)}</strong>
+              </Col>
+            )}
           </Row>
         )}
         <Row gutter={16} style={{ marginTop: 10 }}>
