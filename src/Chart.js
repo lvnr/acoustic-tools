@@ -28,6 +28,7 @@ const Chart = ({ state, data }) => {
         }
       }}
     >
+
       <VictoryAxis
         tickValues={FrequencyDomain}
         label="Frequency (Hz)"
@@ -41,6 +42,7 @@ const Chart = ({ state, data }) => {
         }}
         tickFormat={(t) => t < 1000 ? t : `${t/1000}k`}
       />
+
       <VictoryAxis
         dependentAxis
         label="Reverberation Time (s)"
@@ -52,61 +54,70 @@ const Chart = ({ state, data }) => {
           tickLabels: { fontSize: 7, padding: 5 }
         }}
       />
+
       <VictoryGroup>
-        {state.showMeasuredRT60 && <VictoryArea
-          style={{
-            data: {
-              fill: 'rgb(0, 82, 255)',
-              fillOpacity: .6,
-              strokeWidth: 0,
-            },
-            labels: {
-              fontSize: 6,
-              fill: "#ccc"
-            }
-          }}
-          // labels={(d) => d.RT60}
-          interpolation="natural"
-          x="frequency"
-          y="RT60"
-          domain={{ x: [63, 8000] }}
-          data={data.measuredRT60Formatted}
-        />}
+        {state.showMeasuredRT60 && (
+          <VictoryArea
+            style={{
+              data: {
+                fill: 'rgb(0, 82, 255)',
+                fillOpacity: .6,
+                strokeWidth: 0,
+              },
+              labels: {
+                fontSize: 6,
+                fill: "#ccc"
+              }
+            }}
+            // labels={(d) => d.RT60}
+            interpolation="natural"
+            x="frequency"
+            y="RT60"
+            domain={{ x: [63, 8000] }}
+            data={data.measuredRT60Formatted}
+          />
+        )}
 
-        {state.showEffectiveRT60 && <VictoryArea
-          style={{
-            data: {
-              fill: 'rgb(0, 0, 0)',
-              fillOpacity: .9,
-              strokeWidth: 0,
-            },
-          }}
-          interpolation="natural"
-          x="frequency"
-          y="RT60"
-          domain={{ x: [63, 8000] }}
-          data={data.effectiveRT60Formatted}
-        />}
+        {state.showEffectiveRT60 && (
+          <VictoryArea
+            style={{
+              data: {
+                fill: 'rgb(0, 0, 0)',
+                fillOpacity: .9,
+                strokeWidth: 0,
+              },
+            }}
+            interpolation="natural"
+            x="frequency"
+            y="RT60"
+            domain={{ x: [63, 8000] }}
+            data={data.effectiveRT60Formatted}
+          />
+        )}
 
-        {state.showRT60Tolerances && <VictoryArea
-          style={{
-            data: {
-              fill: 'rgb(51, 255, 204)',
-              fillOpacity: .5,
-              strokeWidth: 0,
-            },
-          }}
-          domain={{ x: [63, 8000] }}
-          data={RT60TolerancesFormatted}
-        />}
+        {state.showRT60Tolerances && (
+          <VictoryArea
+            style={{
+              data: {
+                fill: 'rgb(51, 255, 204)',
+                fillOpacity: .5,
+                strokeWidth: 0,
+              },
+            }}
+            domain={{ x: [63, 8000] }}
+            data={RT60TolerancesFormatted}
+          />
+        )}
 
-        {state.showTargetRT60 && <VictoryLine
-          style={{ data: { stroke: 'red' } }}
-          data={[
-            { x: 63, y: data.TargetRT60 },
-            { x: 8000, y: data.TargetRT60 },
-          ]}
-        />}
+        {state.showTargetRT60 && (
+          <VictoryLine
+            style={{ data: { stroke: 'red' } }}
+            data={[
+              { x: 63, y: data.TargetRT60 },
+              { x: 8000, y: data.TargetRT60 },
+            ]}
+          />
+        )}
       </VictoryGroup>
     </VictoryChart>
   )
