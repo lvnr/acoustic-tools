@@ -1,3 +1,56 @@
+const generic = [
+  {
+    name: 'Standing Person – AMS Acoustics',
+    source: 'AMS Acoustics Data',
+    reference: 'http://www.amsacoustics.co.uk/pdfs/IR-57-Absofanaverageperson.pdf',
+    type: 'ams-acoustics-standing-person',
+    quantity: 1,
+    area: null, // m. sq.
+    sabins: {
+        63: 0,
+       125: .05,
+       250: .16,
+       500: .25,
+      1000: .58,
+      2000: .86,
+      4000: 1.03,
+      8000: 1.29,
+    },
+  },
+  {
+    name: 'Standing Person – Leo. L. Beranek',
+    source: 'Leo. L. Beranek',
+    type: 'leo-beranek-standing-person',
+    quantity: 1,
+    sabins: {
+        63: 0,
+       125: .19,
+       250: .33,
+       500: .44,
+      1000: .42,
+      2000: .46,
+      4000: .37,
+      8000: 0,
+    },
+  },
+  {
+    name: 'Male Standing – Heinrich Kuttruff',
+    source: 'Room Acoustics – Heinrich Kuttruff',
+    type: 'heinrich-kuttruff-male-standing',
+    quantity: 1,
+    sabins: {
+        63: 0,
+       125: .12,
+       250: .24,
+       500: .59,
+      1000: .98,
+      2000: 1.13,
+      4000: 1.12,
+      8000: 0,
+    },
+  },
+]
+
 const knaufMarkant = [
   {
     name: 'Quadril Tile, 12x12mm Square Perf., No wool, D-200mm',
@@ -303,6 +356,7 @@ const audimute = [
 ]
 
 export default {
+  'Generic': generic,
   'KNAUF Markant': knaufMarkant,
   'ARMOURCOAT': armourcoat,
   'Ecophon': ecophon,
