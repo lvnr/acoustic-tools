@@ -17,7 +17,7 @@ const absorberOptions = _.map(absorbers, (absorberGroup, label) => {
   }
 })
 
-const Absorber = ({ index, name, width, height, type, selection, coefficients, onValueUpdate, onRemove, onCoefficientUpdate, onAbsorberSelect }) => {
+const Absorber = ({ index, name, width, height, quantity, type, selection, coefficients, sabins, onValueUpdate, onRemove, onCoefficientUpdate, onAbsorberSelect }) => {
   const onUpdate = (e) => {
     onValueUpdate(index, e.target.name, e.target.value)
   }
@@ -27,20 +27,24 @@ const Absorber = ({ index, name, width, height, type, selection, coefficients, o
   const handleCoefficientUpdate = (e) => {
     const newCoefficients = {
       ...coefficients,
+      ...sabins,
       [e.target.name]: e.target.value,
     }
     onCoefficientUpdate(index, newCoefficients)
   }
 
   const handleAbsorberSelect = (selection) => {
-    if (selection[0] === 'custom')
-      return onAbsorberSelect(index, { name: 'Custom', type: 'custom', coefficients: {}, selection })
+    if (selection[0] === 'custom-coefficients')
+      return onAbsorberSelect(index, { name: 'Custom (coefficients)', type: 'custom-coefficients', coefficients: {}, selection })
+    if (selection[0] === 'custom-sabins')
+      return onAbsorberSelect(index, { name: 'Custom (sabins)', type: 'custom-sabins', sabins: {}, selection })
     const absorberGroup = absorbers[selection[0]]
     const absorber = {
       ..._.find(absorberGroup, a => a.type === selection[1]),
       selection,
       width,
       height,
+      quantity,
     }
     onAbsorberSelect(index, absorber)
   }
@@ -52,35 +56,51 @@ const Absorber = ({ index, name, width, height, type, selection, coefficients, o
   return (
     <Row type="flex" gutter={16} style={{ marginBottom: 20 }}>
       <Col span={8}>
-        <Row gutter={16}>
-          <Col span={12}>
-            <Input
-              type="number"
-              name="width"
-              size="large"
-              placeholder="width (cm)"
-              onChange={onUpdate}
-              value={width}
-            />
-          </Col>
-          <Col span={12}>
-            <Input
-              type="number"
-              name="height"
-              size="large"
-              placeholder="height (cm)"
-              onChange={onUpdate}
-              value={height}
-            />
-          </Col>
-        </Row>
+        {sabins && (
+          <Row gutter={16}>
+            <Col span={24}>
+              <Input
+                type="number"
+                name="quantity"
+                size="large"
+                placeholder="quantity"
+                onChange={onUpdate}
+                value={quantity}
+              />
+            </Col>
+          </Row>
+        )}
+        {coefficients && (
+          <Row gutter={16}>
+            <Col span={12}>
+              <Input
+                type="number"
+                name="width"
+                size="large"
+                placeholder="width (cm)"
+                onChange={onUpdate}
+                value={width}
+              />
+            </Col>
+            <Col span={12}>
+              <Input
+                type="number"
+                name="height"
+                size="large"
+                placeholder="height (cm)"
+                onChange={onUpdate}
+                value={height}
+              />
+            </Col>
+          </Row>
+        )}
         <Row gutter={16} style={{ marginTop: 10 }}>
           <Col span={20}>
             <Cascader
               size="large"
               style={{ width: '100%' }}
               placeholder="Absorber type"
-              options={[ ...absorberOptions, { label: 'Custom', value: 'custom' } ]}
+              options={[ ...absorberOptions, { label: 'Custom (coefficients)', value: 'custom-coefficients' }, { label: 'Custom (sabins)', value: 'custom-sabins' } ]}
               onChange={handleAbsorberSelect}
               showSearch={{ filter }}
               value={selection}
@@ -98,7 +118,7 @@ const Absorber = ({ index, name, width, height, type, selection, coefficients, o
         </Row>
       </Col>
 
-      {type === 'custom'
+      {type === 'custom-coefficients' || type === 'custom-sabins'
         ? FrequencyDomain.map(hz => (
           <Col span={2} key={hz}>
             <Input
@@ -106,14 +126,14 @@ const Absorber = ({ index, name, width, height, type, selection, coefficients, o
               size="large"
               placeholder={hz}
               onChange={handleCoefficientUpdate}
-              value={coefficients ? coefficients[hz] : 0}
+              value={coefficients ? coefficients[hz] : sabins ? sabins[hz] : 0}
               style={{ textAlign: 'center' }}
             />
           </Col>
         ))
         : FrequencyDomain.map(hz => (
           <Col span={2} key={hz} className="grid-col">
-            {coefficients ? coefficients[hz] : '-'}
+            {coefficients ? coefficients[hz] : sabins ? sabins[hz] : '-'}
           </Col>
         ))
       }

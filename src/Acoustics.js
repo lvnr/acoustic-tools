@@ -8,7 +8,7 @@ const { Point, Log } = Interp
 
 const K_FACTOR = 0.161
 
-// Target RT60 values recommended by DIN18041 standard for depending on room usage
+// Target RT60 values recommended by DIN18041 standard depending on room usage
 // A1 - Music
 // A2 - Speech / Presentation
 // A3 - Education / Communication
@@ -42,7 +42,7 @@ class Acoustics {
 
   static A = (V, T) => K_FACTOR * V / T
 
-  static A_eq = (alpha, S) => alpha * S
+  static A_eq = (alpha, S) => alpha * S // sabins
 
   static alpha = (A_eq, S) => A_eq / S
 
@@ -149,7 +149,11 @@ class Acoustics {
 
     _.map(FrequencyDomain, hz => {
       const totalEqAbsorptionAtFrequency = _.reduce(absorbers, (sum, absorber) => {
-        const { width, height, coefficients } = absorber
+        const { width, height, coefficients, quantity, sabins } = absorber
+        if (quantity && sabins) {
+          const sabinsHz = sabins[hz] || 0
+          return sum + Number(quantity) * sabinsHz
+        }
         if (!width || !height || !coefficients) return sum
         const alpha = coefficients[hz] || 0
         const S = (width / 100) * (height / 100)

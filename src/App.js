@@ -73,9 +73,12 @@ class App extends Component {
     this.setState({ absorbers })
   }
 
-  handleCoefficientUpdate = (index, coefficients) => {
+  handleCoefficientUpdate = (index, newValues) => {
     let absorbers = [ ...this.state.absorbers ]
-    absorbers[index] = { ...absorbers[index], coefficients }
+    if (absorbers[index].coefficients)
+      absorbers[index] = { ...absorbers[index], coefficients: newValues }
+    if (absorbers[index].sabins)
+      absorbers[index] = { ...absorbers[index], sabins: newValues }
     this.setState({ absorbers })
   }
 
