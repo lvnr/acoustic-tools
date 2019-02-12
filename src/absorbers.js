@@ -1,3 +1,5 @@
+import _ from 'lodash'
+
 const generic = [
   {
     name: 'Standing Person – AMS Acoustics',
@@ -348,6 +350,38 @@ const theFoamFactory = [
       2000: 1.16,
       4000: 1.16,
       8000: 1.10,
+    },
+  },
+  {
+    name: 'Corner Bass Absorber | 12" x 12" x 24", 8 pack',
+    type: 'the-foam-factory-corner-bass-absorber-12x12x24-8pack',
+    price: 98.99,
+    area: 1.475,
+    sabins: {
+        63: _.round(0.50 * 1.475, 2),
+       125: _.round(1.18 * 1.475, 2),
+       250: _.round(1.27 * 1.475, 2),
+       500: _.round(1.26 * 1.475, 2),
+      1000: _.round(1.19 * 1.475, 2),
+      2000: _.round(1.16 * 1.475, 2),
+      4000: _.round(1.16 * 1.475, 2),
+      8000: _.round(1.10 * 1.475, 2),
+    },
+  },
+  {
+    name: 'Corner Bass Absorber | 12" x 12" x 24", 8 pack | non-touching inst.',
+    type: 'the-foam-factory-corner-bass-absorber-12x12x24-8pack-non-touch',
+    price: 98.99,
+    area: 2.86,
+    sabins: {
+        63: _.round(0.50 * 2.86, 2),
+       125: _.round(1.18 * 2.86, 2),
+       250: _.round(1.27 * 2.86, 2),
+       500: _.round(1.26 * 2.86, 2),
+      1000: _.round(1.19 * 2.86, 2),
+      2000: _.round(1.16 * 2.86, 2),
+      4000: _.round(1.16 * 2.86, 2),
+      8000: _.round(1.10 * 2.86, 2),
     },
   },
 ]
