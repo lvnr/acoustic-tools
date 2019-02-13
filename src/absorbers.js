@@ -53,6 +53,79 @@ const generic = [
   },
 ]
 
+const auralex = [
+  {
+    name: 'LENRD® J "Corner" Mount | 12" x 12" x 24", 4 pack',
+    type: 'auralex-lenrd-j-mount-12x12x24-4pack',
+    price: 200,
+    area: 0.353 * 4, // includes all exposed surface areas
+    sabins: {
+    '31.5': _.round(0.10 * 1.41, 2),
+        40: _.round(0.09 * 1.41, 2),
+        50: _.round(0.04 * 1.41, 2),
+        63: _.round(0.40 * 1.41, 2),
+        80: _.round(0.52 * 1.41, 2),
+       100: _.round(0.65 * 1.41, 2),
+       125: _.round(1.10 * 1.41, 2),
+       160: _.round(1.33 * 1.41, 2),
+       200: _.round(1.41 * 1.41, 2),
+       250: _.round(1.44 * 1.41, 2),
+       315: _.round(1.33 * 1.41, 2),
+       400: _.round(1.29 * 1.41, 2),
+       500: _.round(1.23 * 1.41, 2),
+       630: _.round(1.22 * 1.41, 2),
+       800: _.round(1.16 * 1.41, 2),
+      1000: _.round(1.06 * 1.41, 2),
+      1250: _.round(1.02 * 1.41, 2),
+      1600: _.round(0.96 * 1.41, 2),
+      2000: _.round(0.92 * 1.41, 2),
+      2500: _.round(0.91 * 1.41, 2),
+      3150: _.round(0.88 * 1.41, 2),
+      4000: _.round(0.88 * 1.41, 2),
+      5000: _.round(0.89 * 1.41, 2),
+      6300: _.round(0.90 * 1.41, 2),
+      8000: _.round(0.98 * 1.41, 2),
+     10000: _.round(1.00 * 1.41, 2),
+     12500: _.round(1.00 * 1.41, 2),
+    },
+  },
+  {
+    name: 'LENRD® A "Wall" Mount | 12" x 12" x 24", 4 pack',
+    type: 'auralex-lenrd-a-mount-12x12x24-4pack',
+    price: 200,
+    area: 0.73, // donesn't include additional surface area from top & bottom edges because provided coefficients are for floor coverage area
+    sabins: {
+    '31.5': _.round(0.20 * 0.73, 2),
+        40: _.round(0.20 * 0.73, 2),
+        50: _.round(0.07 * 0.73, 2),
+        63: _.round(0.56 * 0.73, 2),
+        80: _.round(0.49 * 0.73, 2),
+       100: _.round(1.05 * 0.73, 2),
+       125: _.round(1.30 * 0.73, 2),
+       160: _.round(1.21 * 0.73, 2),
+       200: _.round(1.47 * 0.73, 2),
+       250: _.round(1.55 * 0.73, 2),
+       315: _.round(1.47 * 0.73, 2),
+       400: _.round(1.49 * 0.73, 2),
+       500: _.round(1.53 * 0.73, 2),
+       630: _.round(1.55 * 0.73, 2),
+       800: _.round(1.52 * 0.73, 2),
+      1000: _.round(1.48 * 0.73, 2),
+      1250: _.round(1.50 * 0.73, 2),
+      1600: _.round(1.51 * 0.73, 2),
+      2000: _.round(1.48 * 0.73, 2),
+      2500: _.round(1.48 * 0.73, 2),
+      3150: _.round(1.48 * 0.73, 2),
+      4000: _.round(1.51 * 0.73, 2),
+      5000: _.round(1.54 * 0.73, 2),
+      6300: _.round(1.58 * 0.73, 2),
+      8000: _.round(1.72 * 0.73, 2),
+     10000: _.round(1.84 * 0.73, 2),
+     12500: _.round(2.00 * 0.73, 2),
+    },
+  },
+]
+
 const knaufMarkant = [
   {
     name: 'Quadril Tile, 12x12mm Square Perf., No wool, D-200mm',
@@ -412,6 +485,7 @@ const audimute = [
 
 export default {
   'Generic': generic,
+  'Auralex': auralex,
   'KNAUF Markant': knaufMarkant,
   'ARMOURCOAT': armourcoat,
   'Ecophon': ecophon,
