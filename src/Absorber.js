@@ -77,7 +77,7 @@ const Absorber = ({ index, price, width, height, quantity, type, selection, coef
         )}
         {coefficients && (
           <Row gutter={16}>
-            <Col span={price ? 8 : 12}>
+            <Col span={price && width && height ? 8 : 12}>
               <Input
                 type="number"
                 name="width"
@@ -87,7 +87,7 @@ const Absorber = ({ index, price, width, height, quantity, type, selection, coef
                 value={width}
               />
             </Col>
-            <Col span={price ? 8 : 12}>
+            <Col span={price && width && height ? 8 : 12}>
               <Input
                 type="number"
                 name="height"

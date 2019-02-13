@@ -59,6 +59,7 @@ const knaufMarkant = [
     type: 'knauf-markant-quadril-12x12-sq-hole-no-wool-d200',
     width: null,
     height: null,
+    price: 3000 / 485,
     coefficients: {
         63: .30,
        125: .45,
@@ -75,6 +76,7 @@ const knaufMarkant = [
     type: 'knauf-markant-quadril-12x12-sq-hole-no-wool-d65',
     width: null,
     height: null,
+    price: 3000 / 485,
     coefficients: {
         63: .05,
        125: .15,
@@ -91,6 +93,7 @@ const knaufMarkant = [
     type: 'knauf-markant-quadril-12x12-sq-hole-50mm-wool-d200',
     width: null,
     height: null,
+    price: 3000 / 485 + 725 / 485,
     coefficients: {
         63: .25,
        125: .55,
@@ -107,6 +110,7 @@ const knaufMarkant = [
     type: 'knauf-markant-quadril-12x12-sq-hole-50mm-wool-d65',
     width: null,
     height: null,
+    price: 3000 / 485 + 725 / 485,
     coefficients: {
         63: .15,
        125: .40,
@@ -240,23 +244,6 @@ const theFoamFactory = [
     },
   },
   {
-    name: '3" Pyramid Foam | 24" x 24", 12 Pack',
-    type: 'the-foam-factory-acoustic-foam-pyramid-3x24x24',
-    quantity: 1,
-    price: 86.99,
-    area: 4.46,
-    sabins: {
-        63: 0.4,
-       125: 1.12,
-       250: 2.1,
-       500: 3.7,
-      1000: 3.65,
-      2000: 4.1,
-      4000: 4.64,
-      8000: 4.0,
-    },
-  },
-  {
     name: '4" Pyramid Foam',
     type: 'the-foam-factory-acoustic-foam-pyramid-4-inch',
     width: null,
@@ -318,6 +305,23 @@ const theFoamFactory = [
       2000: .92,
       4000: 1.04,
       8000: 1.0,
+    },
+  },
+  {
+    name: '3" Wedge Foam | 24" x 24", 12 Pack',
+    type: 'the-foam-factory-acoustic-foam-wedge-3x24x24',
+    quantity: 1,
+    price: 86.99,
+    area: 4.46,
+    sabins: {
+        63: 0.4,
+       125: 1.12,
+       250: 2.1,
+       500: 3.7,
+      1000: 3.65,
+      2000: 4.1,
+      4000: 4.64,
+      8000: 4.0,
     },
   },
   {
